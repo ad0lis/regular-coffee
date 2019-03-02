@@ -155,7 +155,8 @@
 
                 if (unmatchedBraces.Any())
                 {
-                    errorText = $"{errorText}, {unmatchedBraces.Count} unbalanced braces were found";
+                    bool isMatchesPlural = unmatchedBraces.Count % 10 != 1 || unmatchedBraces.Count == 11;
+                    errorText = $"{errorText}, {unmatchedBraces.Count} unbalanced brace{(isMatchesPlural ? "s" : string.Empty)} {(isMatchesPlural ? "were" : "was")} found";
                 }
 
                 TextMethods.WriteError(errorText);
