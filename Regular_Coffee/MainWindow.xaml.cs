@@ -24,7 +24,8 @@
         private static ScintillaMethods _textSciMethods;
         private static FindReplace _textFindReplace;
         private static ViewModel _mainViewModel = new ViewModel();
-        private static int _prefHeight = 120;
+        private static int _prefHeight = 130;
+        private bool _restoreBeforeMoving = false;
 
         public MainWindow()
         {
@@ -180,13 +181,10 @@
 
         private void Window_Move(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                this.DragMove();
-            }
-
             if (e.ChangedButton == MouseButton.Left && e.ClickCount == 2)
             {
+                _restoreBeforeMoving = false;
+
                 if (this.WindowState == WindowState.Maximized)
                 {
                     this.RestoreWindow();
@@ -196,6 +194,12 @@
                     this.MaximizeWindow();
                 }
             }
+
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                _restoreBeforeMoving = this.WindowState == WindowState.Maximized;
+                this.DragMove();
+            }
         }
 
         private void RestoreWindow()
@@ -203,7 +207,7 @@
             mainBorder.BorderThickness = new Thickness(5, 5, 5, 5);
             _textScintilla.Margins[1].Width = 2;
             _regexScintilla.Margins[1].Width = 2;
-            SystemCommands.RestoreWindow(this);
+            WindowState = WindowState.Normal;
         }
 
         private void MaximizeWindow()
@@ -504,6 +508,30 @@
             }
 
             this.SetRegexPreferencesCheckboxes();
+        }
+
+        private void TopBar_LeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _restoreBeforeMoving = false;
+        }
+
+        private void TopBar_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_restoreBeforeMoving)
+            {
+                _restoreBeforeMoving = false;
+
+                System.Windows.Point point = PointToScreen(e.MouseDevice.GetPosition(this));
+
+                this.Left = point.X - (this.RestoreBounds.Width * 0.5);
+                this.Top = point.Y;
+
+                RestoreWindow();
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    this.DragMove();
+                }
+            }
         }
     }
 }

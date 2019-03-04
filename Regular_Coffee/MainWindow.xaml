@@ -34,7 +34,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <!--Top window border-->
-            <Grid Background="{StaticResource DarkGrayBrush}" Grid.Row="0" MouseDown="Window_Move" WindowChrome.IsHitTestVisibleInChrome="True">
+            <Grid Background="{StaticResource DarkGrayBrush}" Grid.Row="0" MouseDown="Window_Move" WindowChrome.IsHitTestVisibleInChrome="True" MouseLeftButtonUp="TopBar_LeftButtonUp" MouseMove="TopBar_MouseMove">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="5"/>
