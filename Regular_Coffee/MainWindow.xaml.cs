@@ -477,6 +477,12 @@
                     e.Handled = true;
                 }
             }
+
+            if (e.Key == Key.F5)
+            {
+                await HelperMethods.MainMatchMethod(RegexUserInput.Text);
+                e.Handled = true;
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
