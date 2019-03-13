@@ -15,6 +15,7 @@
         private string _matchesShowingText = string.Empty;
         private ObservableCollection<IMainMatch> _mainMatches = new ObservableCollection<IMainMatch>();
         private Visibility _bottomButtonsVisibility = Visibility.Hidden;
+        private Visibility _exportRectangleVisibility = Visibility.Hidden;
         private int _matchesLeftUnshown = 1337;
         private bool _matchButtonsEnabled = true;
         private bool _highlightEnabled = true;
@@ -79,6 +80,20 @@
             {
                 this._leftColumnWidth = value;
                 this.NotifyPropertyChanged("LeftColumnWidth");
+            }
+        }
+
+        public Visibility ExportRectangleVisibility
+        {
+            get
+            {
+                return this._exportRectangleVisibility;
+            }
+
+            set
+            {
+                this._exportRectangleVisibility = value;
+                this.NotifyPropertyChanged("ExportRectangleVisibility");
             }
         }
 

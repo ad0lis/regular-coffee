@@ -394,6 +394,12 @@
                 e.Handled = true;
                 await HelperMethods.MainMatchMethod(RegexUserInput.Text);
             }
+            else if (e.KeyCode == System.Windows.Forms.Keys.F5)
+            {
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+                await HelperMethods.MainMatchMethod(RegexUserInput.Text);
+            }
         }
 
         private void TextFindReplace_KeyPressed(object sender, System.Windows.Forms.KeyEventArgs e)
@@ -428,6 +434,12 @@
                 }
 
                 e.Handled = true;
+            }
+
+            if (e.Key == Key.A && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                MainViewModel.ExportRectangleVisibility = Visibility.Visible;
+                exportRectangle.Focus();
             }
         }
 
@@ -478,6 +490,13 @@
                 if (e.Key == Key.M)
                 {
                     await HelperMethods.MainMatchMethod(RegexUserInput.Text);
+                    e.Handled = true;
+                }
+
+                if (e.Key == Key.C && MainViewModel.ExportRectangleVisibility == Visibility.Visible)
+                {
+                    matchesTreeView.Focus();
+                    HelperMethods.ExportAllMatches();
                     e.Handled = true;
                 }
             }
@@ -532,6 +551,11 @@
                     this.DragMove();
                 }
             }
+        }
+
+        private void ExportRectangle_LostFocus(object sender, RoutedEventArgs e)
+        {
+            MainViewModel.ExportRectangleVisibility = Visibility.Hidden;
         }
     }
 }

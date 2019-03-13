@@ -218,6 +218,27 @@
             AddOrRemoveItemsFromTreeView();
         }
 
+        public static void ExportAllMatches()
+        {
+            if (_regexMatches == null || _regexMatches.Count == 0)
+            {
+                return;
+            }
+
+            List<string> firstLineMembers = new List<string>
+            {
+                "Whole match"
+            };
+
+            firstLineMembers.AddRange(Enumerable.Range(0, _regexMatches[0].Groups.Count - 1).Select(i => $"Group {++i}"));
+
+            string firstLine = string.Join("\t", firstLineMembers);
+
+            List<string> lines = _regexMatches.Cast<Match>().Select(match => string.Join("\t", Enumerable.Range(0, match.Groups.Count).Select(i => match.Groups[i]))).ToList();
+            lines.Insert(0, firstLine);
+            Clipboard.SetText(string.Join("\r\n", lines));
+        }
+
         private static List<int> FindUnmatchedBraces()
         {
             List<int> unmatchedBraces = new List<int>();
