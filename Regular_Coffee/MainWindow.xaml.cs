@@ -16,8 +16,6 @@
     /// </summary>
     public partial class MainWindow : Window
     {
-
-        private static double _treeViewHeight;
         private static Scintilla _regexScintilla = new Scintilla();
         private static Scintilla _textScintilla = new Scintilla();
         private static ScintillaMethods _regexSciMethods;
@@ -47,19 +45,6 @@
         public static ScintillaMethods TextUserInputScintillaMethods => _textSciMethods;
 
         public static ViewModel MainViewModel => _mainViewModel;
-
-        public static double TreeViewHeight
-        {
-            get
-            {
-                return _treeViewHeight;
-            }
-
-            set
-            {
-                _treeViewHeight = value;
-            }
-        }
 
         private void InputText_Loaded(object sender, RoutedEventArgs e)
         {
@@ -111,40 +96,6 @@
         private void CancelRegex_ButtonClick(object sender, RoutedEventArgs e)
         {
             HelperMethods.RegexCancelTokenSource.Cancel();
-        }
-
-        private void TreeViewSizeChanged_Handler(object sender, SizeChangedEventArgs e)
-        {
-            if (e.HeightChanged)
-            {
-                TreeViewHeight = matchesTreeView.RenderSize.Height - 1;
-                HelperMethods.HandleTreeViewOnResize();
-            }
-        }
-
-        private void PreviousMatches_Button_Click(object sender, RoutedEventArgs e)
-        {
-            MainViewModel.OutsetOfTreeView -= HelperMethods.CountToPutToTreeView;
-            if (MainViewModel.OutsetOfTreeView < 0)
-            {
-                MainViewModel.OutsetOfTreeView = 0;
-            }
-
-            MainViewModel.MatchesLeftUnshown = HelperMethods.MatchesCount - MainViewModel.OutsetOfTreeView - HelperMethods.CountToPutToTreeView;
-            HelperMethods.UpdateTreeView();
-        }
-
-        private void NextMatches_Button_Click(object sender, RoutedEventArgs e)
-        {
-            MainViewModel.OutsetOfTreeView += HelperMethods.CountToPutToTreeView;
-            if (MainViewModel.OutsetOfTreeView > HelperMethods.MatchesCount - HelperMethods.CountToPutToTreeView)
-            {
-                MainViewModel.OutsetOfTreeView = HelperMethods.MatchesCount - HelperMethods.CountToPutToTreeView;
-            }
-
-            MainViewModel.MatchesLeftUnshown = HelperMethods.MatchesCount - MainViewModel.OutsetOfTreeView - HelperMethods.CountToPutToTreeView;
-
-            HelperMethods.UpdateTreeView();
         }
 
         private void MatchesTreeView_SelectedItemChanged_Handler(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -341,11 +292,6 @@
             {
                 item.IsSubmenuOpen = true;
             }
-        }
-
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            TreeViewHeight = matchesTreeView.RenderSize.Height - 1;
         }
 
         // Find replace button combos

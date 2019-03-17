@@ -14,8 +14,6 @@
     {
         private static MatchCollection _regexMatches;
         private static int _regexTimeoutSeconds = 10;
-        private static int _countToPutToTreeView = 0;
-        private static int _outsetOfTreeView = 0;
         private static CancellationTokenSource _regexCancelTokenSource = new CancellationTokenSource();
         private static RegexOptions _mainRegexOptions = RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Singleline;
 
@@ -33,42 +31,9 @@
             set => _regexCancelTokenSource = value;
         }
 
-        public static int OutsetOfTreeView
-        {
-            get => _outsetOfTreeView;
-            set => _outsetOfTreeView = value;
-        }
-
-        public static int CountToPutToTreeView
-        {
-            get => _countToPutToTreeView;
-            set => _countToPutToTreeView = value;
-        }
-
         public static int MatchesCount
         {
             get => _regexMatches.Count;
-        }
-
-        public static void UpdateTreeView()
-        {
-            _countToPutToTreeView = Convert.ToInt32(Math.Floor(Math.Min(MainWindow.TreeViewHeight / 16, _regexMatches.Count)));
-
-            ObservableCollection<IMainMatch> mainMatches = GetMainMatches();
-
-            MainWindow.MainViewModel.MainMatches = mainMatches;
-
-            if (_countToPutToTreeView >= _regexMatches.Count)
-            {
-                MainWindow.MainViewModel.BottomButtonsVisibility = Visibility.Hidden;
-            }
-            else
-            {
-                MainWindow.MainViewModel.MatchesShowingText = $"Showing {_outsetOfTreeView + 1}-{_outsetOfTreeView + _countToPutToTreeView} / {_regexMatches.Count} matches";
-                MainWindow.MainViewModel.BottomButtonsVisibility = Visibility.Visible;
-            }
-
-            MainWindow.MainViewModel.MatchesLeftUnshown = _regexMatches.Count - _outsetOfTreeView - _countToPutToTreeView;
         }
 
         public static bool VerifyRegEx(string testPattern)
@@ -102,7 +67,6 @@
             MainWindow.MainViewModel.MainMatches = new ObservableCollection<IMainMatch>();
             MainWindow.MainViewModel.ErrorText = string.Empty;
             MainWindow.MainViewModel.DiagnosticsText = string.Empty;
-            MainWindow.MainViewModel.BottomButtonsVisibility = Visibility.Hidden;
 
             RegexCancelTokenSource = new CancellationTokenSource();
 
@@ -197,25 +161,7 @@
             int regexCount = _regexMatches.Count;
             MainWindow.MainViewModel.MatchButtonsEnabled = true;
             TextMethods.FillDiagnostics(stopwatch.Elapsed, _regexMatches.Count);
-            ResetConstants();
-            UpdateTreeView();
-        }
-
-        public static void HandleTreeViewOnResize()
-        {
-            if (_regexMatches == null)
-            {
-                return;
-            }
-
-            int countToPutToTreeView = Convert.ToInt32(Math.Floor(Math.Min(MainWindow.TreeViewHeight / 16, _regexMatches.Count)));
-            if (countToPutToTreeView == _countToPutToTreeView)
-            {
-                return;
-            }
-
-            _countToPutToTreeView = countToPutToTreeView;
-            AddOrRemoveItemsFromTreeView();
+            MainWindow.MainViewModel.MainMatches = GetMainMatches();
         }
 
         public static void ExportAllMatches()
@@ -362,73 +308,6 @@
             }
         }
 
-        private static void AddOrRemoveItemsFromTreeView()
-        {
-            ObservableCollection<IMainMatch> mainMatchCollection = MainWindow.MainViewModel.MainMatches;
-            if (_countToPutToTreeView > mainMatchCollection.Count)
-            {
-                int howManyToAdd = _countToPutToTreeView - mainMatchCollection.Count;
-                int howManyToAddToFront = 0;
-
-                for (int i = 0; i < howManyToAdd; i++)
-                {
-                    int elementToAddIndex = _outsetOfTreeView + mainMatchCollection.Count;
-                    if (elementToAddIndex >= _regexMatches.Count)
-                    {
-                        howManyToAddToFront = howManyToAdd - i;
-                        break;
-                    }
-
-                    mainMatchCollection.Add(GetMainMatchFromMatch(_regexMatches[elementToAddIndex]));
-                }
-
-                for (int i = 0; i < howManyToAddToFront; i++)
-                {
-                    int elementToAddIndex = _regexMatches.Count - mainMatchCollection.Count - 1;
-                    if (elementToAddIndex < 0)
-                    {
-                        break;
-                    }
-
-                    mainMatchCollection.Insert(0, GetMainMatchFromMatch(_regexMatches[elementToAddIndex]));
-                }
-            }
-            else 
-            {
-                int howManyToRemove = mainMatchCollection.Count - _countToPutToTreeView;
-                for (int i = 0; i < howManyToRemove; i++)
-                {
-                    if (_outsetOfTreeView + mainMatchCollection.Count > _regexMatches.Count)
-                    {
-                        mainMatchCollection.RemoveAt(0);
-                    }
-                    else
-                    {
-                        mainMatchCollection.RemoveAt(mainMatchCollection.Count - 1);
-                    }
-                }
-            }
-
-            int countAboveAvailableMatches = _regexMatches.Count - _countToPutToTreeView - _outsetOfTreeView;
-            int localOutset = _outsetOfTreeView;
-            if (countAboveAvailableMatches < 0)
-            {
-                localOutset += countAboveAvailableMatches;
-            }
-
-            if (_countToPutToTreeView >= _regexMatches.Count)
-            {
-                MainWindow.MainViewModel.BottomButtonsVisibility = Visibility.Hidden;
-            }
-            else
-            {
-                MainWindow.MainViewModel.MatchesShowingText = $"Showing {localOutset + 1}-{localOutset + _countToPutToTreeView} / {_regexMatches.Count} matches";
-                MainWindow.MainViewModel.BottomButtonsVisibility = Visibility.Visible;
-            }
-
-            MainWindow.MainViewModel.MatchesLeftUnshown = _regexMatches.Count - localOutset - _countToPutToTreeView;
-        }
-
         private static IMainMatch GetMainMatchFromMatch(Match matchInQuestion)
         {
             int j = 0;
@@ -453,22 +332,9 @@
                     };
         }
 
-        private static void ResetConstants()
-        {
-            MainWindow.MainViewModel.MatchesLeftUnshown = 1337;
-            MainWindow.MainViewModel.OutsetOfTreeView = 0;
-        }
-
         private static ObservableCollection<IMainMatch> GetMainMatches()
         {
-            ObservableCollection<IMainMatch> mainMatches = new ObservableCollection<IMainMatch>();
-
-            for (int i = 0; i < _countToPutToTreeView; i++)
-            {
-                Match matchInQuestion = _regexMatches[_outsetOfTreeView + i];
-
-                mainMatches.Add(GetMainMatchFromMatch(matchInQuestion));
-            }
+            ObservableCollection<IMainMatch> mainMatches = new ObservableCollection<IMainMatch>(_regexMatches.Cast<Match>().Select(x => GetMainMatchFromMatch(x)));
 
             return mainMatches;
         }

@@ -12,11 +12,8 @@
     {
         private string _errorText = string.Empty;
         private string _diagnosticsText = string.Empty;
-        private string _matchesShowingText = string.Empty;
         private ObservableCollection<IMainMatch> _mainMatches = new ObservableCollection<IMainMatch>();
-        private Visibility _bottomButtonsVisibility = Visibility.Hidden;
         private Visibility _exportRectangleVisibility = Visibility.Hidden;
-        private int _matchesLeftUnshown = 1337;
         private bool _matchButtonsEnabled = true;
         private bool _highlightEnabled = true;
         private bool _wrappingEnabled = true;
@@ -136,62 +133,6 @@
             {
                 this._matchButtonsEnabled = value;
                 this.NotifyPropertyChanged("MatchButtonsEnabled");
-            }
-        }
-
-        public int MatchesLeftUnshown
-        {
-            get
-            {
-                return this._matchesLeftUnshown;
-            }
-
-            set
-            {
-                this._matchesLeftUnshown = value;
-                this.NotifyPropertyChanged("MatchesLeftUnshown");
-            }
-        }
-
-        public int OutsetOfTreeView
-        {
-            get
-            {
-                return HelperMethods.OutsetOfTreeView;
-            }
-
-            set
-            {
-                HelperMethods.OutsetOfTreeView = value;
-                this.NotifyPropertyChanged("OutsetOfTreeView");
-            }
-        }
-
-        public Visibility BottomButtonsVisibility
-        {
-            get
-            {
-                return this._bottomButtonsVisibility;
-            }
-
-            set
-            {
-                this._bottomButtonsVisibility = value;
-                this.NotifyPropertyChanged("BottomButtonsVisibility");
-            }
-        }
-
-        public string MatchesShowingText
-        {
-            get
-            {
-                return this._matchesShowingText;
-            }
-
-            set
-            {
-                this._matchesShowingText = value;
-                this.NotifyPropertyChanged("MatchesShowingText");
             }
         }
 
