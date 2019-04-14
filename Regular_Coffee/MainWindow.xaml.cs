@@ -104,11 +104,15 @@
 
             if (selectedItem != null)
             {
-                _textScintilla.FirstVisibleLine = _textScintilla.Lines[_textScintilla.LineFromPosition(selectedItem.Index)].DisplayIndex;
-
-                _textScintilla.ScrollRange(selectedItem.Index, selectedItem.Index + selectedItem.Length);
                 _textScintilla.SelectionStart = selectedItem.Index;
                 _textScintilla.SelectionEnd = selectedItem.Index + selectedItem.Length;
+                int startCharIndex = _textScintilla.CharPositionFromPoint(0, 0);
+                int endCharIndex = _textScintilla.CharPositionFromPoint(_textScintilla.ClientRectangle.Right, _textScintilla.ClientRectangle.Bottom);
+
+                if (_textScintilla.SelectionEnd + 100 > endCharIndex || _textScintilla.SelectionStart < startCharIndex)
+                {
+                    _textScintilla.ScrollRange(_textScintilla.SelectionStart, _textScintilla.SelectionEnd);                    
+                }
 
                 if (MainViewModel.HighlightEnabled)
                 {
